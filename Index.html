@@ -1,91 +1,183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>22 Days of Love for Rimjhim ❤️</title>
+  <meta name="description" content="A romantic countdown to Rimjhim's birthday with daily messages, fireworks, and a surprise love letter." />
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #ff9a9e, #fad0c4);
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      color: #333;
+    :root{
+      --bg1:#ff9a9e; --bg2:#fad0c4; --text:#222; --accent:#d6336c; --accent2:#5a189a;
+      --card:#fff; --shadow: rgba(0,0,0,.12); --progress: linear-gradient(90deg,#ff6b6b,#ffd36e);
     }
-    h1 {
-      margin-top: 20px;
-      font-size: 2.2em;
-      color: #d6336c;
+    [data-theme="dark"]{
+      --bg1:#150f1f; --bg2:#2b2436; --text:#eee; --accent:#ff83a5; --accent2:#b08cff;
+      --card:#201a2b; --shadow: rgba(0,0,0,.45);
     }
-    .countdown {
-      font-size: 1.3em;
-      margin: 20px 0;
-      color: #5a189a;
+
+    *{box-sizing:border-box}
+    html,body{height:100%; margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; -webkit-font-smoothing:antialiased;}
+    body{
+      min-height:100vh;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      color:var(--text);
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:20px;
     }
-    .message-box {
-      max-width: 600px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      font-size: 1.1em;
-      line-height: 1.6;
+    .container{width:100%; max-width:920px;}
+    header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px}
+    h1{margin:0; color:var(--accent); font-size:clamp(1.4rem,3.4vw,2.4rem)}
+    .sub{font-size:0.95rem; opacity:.9}
+    .card{background:var(--card); border-radius:16px; padding:16px; box-shadow:0 12px 30px var(--shadow);}
+
+    .top-row{display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between}
+    .small{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
     }
-    .hearts {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      z-index: -1;
+
+    .countdown-area{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:14px 0}
+    .tile{background:rgba(255,255,255,.7); padding:12px 14px; border-radius:12px; min-width:92px; text-align:center}
+    [data-theme="dark"] .tile{background:rgba(255,255,255,.04)}
+    .num{font-weight:700; font-size:1.4rem; color:var(--accent2)}
+    .lab{font-size:.82rem; opacity:.9}
+
+    .message-box{margin-top:12px; padding:16px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.92)); text-align:left; font-size:1.03rem; line-height:1.6}
+    [data-theme="dark"] .message-box{background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));}
+
+    .controls{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; align-items:center}
+    .btn{
+      background:var(--accent); color:#fff; border:0; padding:10px 12px; border-radius:10px; font-weight:600; cursor:pointer;
+      box-shadow:0 8px 20px rgba(0,0,0,.12);
     }
-    .heart {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: red;
-      transform: rotate(45deg);
-      animation: float 8s linear infinite;
+    .btn.ghost{background:transparent; color:var(--accent2); border:2px solid var(--accent2); box-shadow:none}
+    .btn.small{padding:8px 10px; font-size:.95rem}
+    .muted{opacity:.86; font-size:.95rem}
+
+    .progress{height:12px; background:rgba(0,0,0,.06); border-radius:999px; overflow:hidden; margin-top:12px}
+    [data-theme="dark"] .progress{background:rgba(255,255,255,.05)}
+    .bar{height:100%; width:0; background:linear-gradient(90deg,#ff6b6b,#ffd36e); transition:width .6s ease}
+
+    /* hearts area */
+    .hearts{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden}
+    .heart{
+      position:absolute; width:18px; height:18px; background:#ff4d6d; transform:rotate(45deg); border-radius:2px; z-index:0;
+      opacity:0.95;
     }
-    .heart::before,
-    .heart::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: red;
-      border-radius: 50%;
+    .heart::before, .heart::after{content:""; position:absolute; width:18px; height:18px; background:#ff4d6d; border-radius:50%;}
+    .heart::before{top:-9px; left:0}
+    .heart::after{left:-9px; top:0}
+
+    /* fireworks canvas */
+    canvas#fire{position:fixed; inset:0; z-index:5; pointer-events:none; visibility:hidden}
+
+    /* birthday glow */
+    .birthday-text{font-size:clamp(1.6rem,5vw,2.6rem); color:#ff146f; font-weight:800; text-align:center; text-shadow:0 0 12px #ff8fbf, 0 0 30px #ff146f; margin:12px 0}
+    .hidden{display:none !important}
+
+    /* modal */
+    .modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; z-index:10; padding:18px}
+    .modal{width:100%; max-width:720px; background:var(--card); border-radius:14px; padding:20px; box-shadow:0 24px 60px rgba(0,0,0,.4)}
+    .modal h2{margin-top:0}
+    .close{background:transparent; border:0; font-weight:700; font-size:1.1rem; cursor:pointer}
+    .modal .modal-body{max-height:60vh; overflow:auto; white-space:pre-wrap; line-height:1.6}
+
+    /* theme toggle */
+    .theme-toggle{display:flex; gap:8px; align-items:center}
+    .footer{margin-top:18px; text-align:center; font-size:.95rem; opacity:.9}
+
+    /* responsive */
+    @media (max-width:560px){
+      .countdown-area{gap:8px}
+      .tile{min-width:72px; padding:10px}
+      header{flex-direction:column; align-items:flex-start; gap:8px}
     }
-    .heart::before {
-      top: -10px;
-      left: 0;
-    }
-    .heart::after {
-      left: -10px;
-      top: 0;
-    }
-    @keyframes float {
-      0% { transform: translateY(100vh) rotate(45deg); opacity: 0; }
-      50% { opacity: 1; }
-      100% { transform: translateY(-10vh) rotate(45deg); opacity: 0; }
+
+    /* reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .heart, .bar, canvas#fire{animation:none !important; transition:none !important}
     }
   </style>
 </head>
 <body>
-  <h1>💌 22 Days of Love for Rimjhim 💕</h1>
-  <div class="countdown" id="countdown"></div>
-  <div class="message-box" id="messageBox"></div>
-
   <div class="hearts" id="hearts"></div>
+  <canvas id="fire"></canvas>
+
+  <div class="container">
+    <header>
+      <div>
+        <h1>💌 22 Days of Love — Rimjhim</h1>
+        <div class="sub">A little daily surprise until your special day 💕</div>
+      </div>
+      <div class="small">
+        <div class="theme-toggle">
+          <button id="themeBtn" class="btn small">Toggle Theme</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="top-row">
+        <div style="flex:1">
+          <div class="countdown-line" id="countLine">Counting down to Sep 23, 2025 (IST)</div>
+          <div class="countdown-area" id="countGrid" aria-hidden="false">
+            <div class="tile"><div class="num" id="daysNum">--</div><div class="lab">Days</div></div>
+            <div class="tile"><div class="num" id="hoursNum">--</div><div class="lab">Hours</div></div>
+            <div class="tile"><div class="num" id="minsNum">--</div><div class="lab">Minutes</div></div>
+            <div class="tile"><div class="num" id="secsNum">--</div><div class="lab">Seconds</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="message-box" id="messageBox">
+        <div style="opacity:.9; font-weight:700">Today's message will appear here 💖</div>
+      </div>
+
+      <div class="controls">
+        <button id="copyBtn" class="btn small">Copy Message</button>
+        <button id="shareBtn" class="btn small ghost">Share</button>
+        <button id="playBtn" class="btn small" title="Play soft melody">Play Melody</button>
+        <div style="flex:1"></div>
+        <div class="muted" id="progressLabel">Progress</div>
+      </div>
+
+      <div class="progress" aria-hidden="true" title="Progress toward her birthday">
+        <div class="bar" id="progressBar"></div>
+      </div>
+
+      <div style="display:flex; gap:10px; align-items:center; justify-content:space-between; margin-top:10px; flex-wrap:wrap">
+        <div class="muted">22-day journey · send one message per day</div>
+        <div style="display:flex; gap:8px; align-items:center">
+          <button id="openLetter" class="btn ghost small" style="display:none">Open Love Letter</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">Tip: You can open this link daily — the message for that day will appear automatically.</div>
+  </div>
+
+  <!-- modal (hidden initially) -->
+  <div id="modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <h2>My Love Letter to Rimjhim</h2>
+        <button class="close" id="closeModal">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- love letter content inserted by JS -->
+      </div>
+    </div>
+  </div>
 
   <script>
-    // Birthday date
-    const birthday = new Date("Sep 23, 2025 00:00:00").getTime();
+    // ====== Configuration ======
+    // Use IST timezone by setting ISO with +05:30
+    const BIRTHDAY_ISO = "2025-09-23T00:00:00+05:30"; // Sep 23, 2025 IST midnight
+    const TOTAL_DAYS = 22; // number of countdown messages before birthday
 
-    // Love messages (Day 22 → Day 1 + Birthday)
+    // Messages array (index 0 => Day 22 message, index 21 => Day 1 message, index 22 => birthday message)
     const messages = [
       "22 days left ❤️ Every day that passes, I realize how much you mean to me. I love your caring nature, your cute little height, your beautiful eyes, and the way you talk — I miss all of it so much.",
       "21 days left 💕 Your voice is the sweetest thing in my world, and I miss it every single day. Long distance may keep us apart, but my love only grows stronger each day. ❤️",
@@ -109,44 +201,376 @@
       "3 days left ❤️ Your birthday is so close, and I can’t stop smiling. Forever and always. 💕",
       "2 days left 👑💖 I feel so blessed to have you in my life. ❤️",
       "1 day left ❤️ Just one more day until I celebrate the most beautiful girl in the world. 💕",
-      "Happy Birthday ❤️🎂 Today is all about you, Rimjhim. You are the most precious person in my life, and I’m so grateful to have you. 💕"
+      "Happy Birthday ❤️🎂 Today is all about you, Rimjhim. You are the most precious person in my life, and I’m so grateful to have you. I promise to love you, support you, and stand by you always. Happiest Birthday, my sweetheart 💕"
     ];
 
-    // Function to update countdown + message
-    function updateCountdown() {
-      const now = new Date().getTime();
-      const distance = birthday - now;
-      const daysLeft = Math.ceil(distance / (1000 * 60 * 60 * 24));
+    // A longer love letter to show in the modal on birthday (you can edit this)
+    const loveLetter = `Hey Rimjhim ❤️
 
-      // Show countdown
-      document.getElementById("countdown").innerHTML =
-        daysLeft > 0
-          ? daysLeft + " days left until Rimjhim’s birthday 🎂"
-          : "🎉 Today is her special day! 🎉";
+Happy Birthday, my love. I wish I could be there to celebrate with you, but even from afar I want you to feel how much I care. 
+You are my light — your eyes, your voice, your care — everything about you makes my days brighter. I know I haven't always been perfect. I'm sorry for the times I was rude or careless. I promise to keep trying, to be better for you, and to always stand by you.
 
-      // Show message
-      const index = messages.length - daysLeft - 1;
-      if (index >= 0 && index < messages.length) {
-        document.getElementById("messageBox").innerHTML = messages[index];
+Today I celebrate you: your smile, your kindness, and the beautiful person you are. I love you more than words, and I can't wait for all the moments we'll share.
+
+Always yours,
+(Your Love) ❤️`;
+
+    // ====== Elements ======
+    const daysNum = document.getElementById('daysNum');
+    const hoursNum = document.getElementById('hoursNum');
+    const minsNum = document.getElementById('minsNum');
+    const secsNum = document.getElementById('secsNum');
+    const countLine = document.getElementById('countLine');
+    const messageBox = document.getElementById('messageBox');
+    const progressBar = document.getElementById('progressBar');
+    const openLetterBtn = document.getElementById('openLetter');
+    const modal = document.getElementById('modal');
+    const modalBody = document.getElementById('modalBody');
+    const closeModal = document.getElementById('closeModal');
+    const copyBtn = document.getElementById('copyBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const playBtn = document.getElementById('playBtn');
+    const fireCanvas = document.getElementById('fire');
+    const heartsContainer = document.getElementById('hearts');
+    const themeBtn = document.getElementById('themeBtn');
+
+    // set modal content
+    modalBody.textContent = loveLetter;
+
+    // ====== Theme (persist) ======
+    function getSavedTheme(){
+      try{ return localStorage.getItem('theme') || 'light' }catch(e){return 'light'}
+    }
+    function applyTheme(t){
+      if(t==='dark') document.documentElement.setAttribute('data-theme','dark');
+      else document.documentElement.removeAttribute('data-theme');
+      try{ localStorage.setItem('theme', t) }catch(e){}
+    }
+    themeBtn.addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark':'light';
+      applyTheme(cur === 'dark' ? 'light' : 'dark');
+    });
+    applyTheme(getSavedTheme());
+
+    // ====== Countdown calculations ======
+    const birthdayDate = new Date(BIRTHDAY_ISO).getTime();
+    const msPerDay = 1000*60*60*24;
+
+    function getDaysLeft(nowMs){
+      // ceil to count partial day as a day left (so on day exactly difference 1 returns 1)
+      return Math.ceil((birthdayDate - nowMs) / msPerDay);
+    }
+
+    function updateClock(){
+      const now = Date.now();
+      const diff = birthdayDate - now;
+      const daysLeft = Math.ceil(diff / msPerDay);
+
+      if(diff <= 0){
+        // Birthday day: show full birthday view
+        countLine.textContent = "🎉 Today is her special day! 🎉";
+        daysNum.textContent = '0';
+        hoursNum.textContent = '0';
+        minsNum.textContent = '0';
+        secsNum.textContent = '0';
+
+        // show birthday message + glowing text + open letter button
+        messageBox.innerHTML = `<div class="birthday-text">🎂 Happy Birthday My Love ❤️🎂</div><p style="margin-top:8px">${escapeHtml(messages[messages.length-1])}</p>`;
+        openLetterBtn.style.display = 'inline-block';
+        // start fireworks & make canvas visible
+        showFireworks();
+        // set progress to 100%
+        progressBar.style.width = '100%';
       } else {
-        document.getElementById("messageBox").innerHTML = "💕 Countdown begins soon 💕";
+        // normal countdown: show dhms
+        const days = Math.floor(diff / msPerDay);
+        const hours = Math.floor((diff % msPerDay) / (1000*60*60));
+        const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
+        const secs = Math.floor((diff % (1000*60)) / 1000);
+
+        daysNum.textContent = String(days).padStart(1,'0');
+        hoursNum.textContent = String(hours).padStart(2,'0');
+        minsNum.textContent = String(mins).padStart(2,'0');
+        secsNum.textContent = String(secs).padStart(2,'0');
+
+        const dl = getDaysLeft(now);
+        countLine.textContent = dl + (dl === 1 ? " day left until Rimjhim’s birthday 🎂" : " days left until Rimjhim’s birthday 🎂");
+
+        // determine which message to show:
+        // messages[0] corresponds to 22 days left, messages[TOTAL_DAYS-1] = 1 day left
+        // index = TOTAL_DAYS - dl
+        const idx = TOTAL_DAYS - dl;
+        if(idx >= 0 && idx < messages.length - 1){
+          messageBox.innerHTML = `<div style="font-weight:700; margin-bottom:6px">💌 Message for today</div><div>${escapeHtml(messages[idx])}</div>`;
+        } else if (idx >= messages.length -1) {
+          // in case it's close but not negative, show last pre-bday message
+          messageBox.innerHTML = `<div>${escapeHtml(messages[messages.length-2])}</div>`;
+        } else {
+          messageBox.innerHTML = `<div class="muted">💕 Countdown begins soon 💕</div>`;
+        }
+        openLetterBtn.style.display = 'none';
+
+        // progress: days completed (0 at start when dl == TOTAL_DAYS, up to TOTAL_DAYS when dl <= 0)
+        const daysCompleted = Math.max(0, TOTAL_DAYS - dl);
+        const pct = Math.min(100, Math.round((daysCompleted / TOTAL_DAYS) * 100));
+        progressBar.style.width = pct + '%';
       }
     }
 
-    // Floating hearts
-    function createHeart() {
-      const heart = document.createElement("div");
-      heart.className = "heart";
-      heart.style.left = Math.random() * 100 + "vw";
-      heart.style.animationDuration = (4 + Math.random() * 6) + "s";
-      document.getElementById("hearts").appendChild(heart);
-      setTimeout(() => heart.remove(), 10000);
+    // escape for simple safety (preserves emojis)
+    function escapeHtml(str){
+      return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
     }
-    setInterval(createHeart, 500);
 
-    // Update every second
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
+    // initial update and timer
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // ====== Copy & Share ======
+    copyBtn.addEventListener('click', async () => {
+      const text = getVisibleMessageText();
+      try{
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = 'Copied ✓';
+        setTimeout(()=> copyBtn.textContent = 'Copy Message', 1400);
+      }catch(err){
+        copyBtn.textContent = 'Copy Failed';
+        setTimeout(()=> copyBtn.textContent = 'Copy Message', 1400);
+      }
+    });
+
+    shareBtn.addEventListener('click', async () => {
+      const text = getVisibleMessageText();
+      const shareData = { title: "A message for Rimjhim", text, url: location.href };
+      if(navigator.share){
+        try{
+          await navigator.share(shareData);
+        }catch(e){
+          // user cancelled or failed
+        }
+      }else{
+        // fallback to copy
+        try{ await navigator.clipboard.writeText(text); alert('Message copied. You can paste to share.'); }
+        catch(e){ alert('Sharing not supported on this device.'); }
+      }
+    });
+
+    function getVisibleMessageText(){
+      // If birthday show the birthday message text, otherwise today's message text
+      const now = Date.now();
+      if(now >= birthdayDate){
+        return messages[messages.length-1];
+      }
+      const dl = getDaysLeft(now);
+      const idx = TOTAL_DAYS - dl;
+      if(idx >=0 && idx < messages.length){
+        return messages[idx];
+      }
+      return "Thinking of you, Rimjhim ❤️";
+    }
+
+    // ====== Modal Love Letter (only visible if openLetter clicked) ======
+    openLetterBtn.addEventListener('click', () => {
+      modal.classList.remove('hidden');
+    });
+    closeModal.addEventListener('click', () => {
+      modal.classList.add('hidden');
+    });
+    modal.addEventListener('click', (e) => {
+      if(e.target === modal) modal.classList.add('hidden');
+    });
+
+    // show "Open Love Letter" only when it's birthday
+    // already handled in updateClock by toggling display
+
+    // ====== Floating hearts ======
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function createHeart(){
+      if(reduceMotion) return;
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      const size = 12 + Math.random()*18;
+      heart.style.width = size + 'px';
+      heart.style.height = size + 'px';
+      heart.style.left = (Math.random()*100) + 'vw';
+      heart.style.top = (100 + Math.random()*10) + 'vh';
+      const dur = 6000 + Math.random()*8000;
+      heart.style.transition = `transform ${dur}ms linear, opacity ${dur}ms linear, top ${dur}ms linear`;
+      heartsContainer.appendChild(heart);
+      // move up
+      requestAnimationFrame(()=> {
+        heart.style.transform = `translateY(-120vh) rotate(${(Math.random()*360)}deg)`;
+        heart.style.opacity = '0';
+      });
+      setTimeout(()=> heart.remove(), dur+200);
+    }
+    const heartInterval = reduceMotion ? 20000 : 600;
+    setInterval(createHeart, heartInterval);
+    // create a few at start
+    for(let i=0;i<6;i++) setTimeout(createHeart, i*250);
+
+    // ====== Fireworks (on birthday) ======
+    const ctx = fireCanvas.getContext('2d');
+    function setCanvasFull(){
+      fireCanvas.width = window.innerWidth;
+      fireCanvas.height = window.innerHeight;
+    }
+    setCanvasFull();
+    window.addEventListener('resize', setCanvasFull);
+
+    let particles = [];
+    function random(min, max){ return Math.random()*(max-min)+min; }
+
+    function createFirework(x, y){
+      const colors = ['#ff1493','#ff69b4','#ffd700','#00ffff','#ff4500','#b08cff'];
+      const count = 50 + Math.floor(Math.random()*40);
+      for(let i=0;i<count;i++){
+        particles.push({
+          x, y,
+          vx: random(-6,6),
+          vy: random(-6,6),
+          life: 60 + Math.floor(Math.random()*40),
+          alpha: 1,
+          color: colors[Math.floor(Math.random()*colors.length)],
+          size: 1 + Math.random()*3
+        });
+      }
+    }
+
+    let fireIntervalId = null;
+    let fireDrawId = null;
+
+    function drawFireworks(){
+      ctx.clearRect(0,0,fireCanvas.width, fireCanvas.height);
+      for(let i = particles.length-1;i>=0;i--){
+        const p = particles[i];
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+        ctx.fill();
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.06; // gravity
+        p.life--;
+        p.alpha -= 0.015;
+        if(p.life <=0 || p.alpha <=0) particles.splice(i,1);
+      }
+    }
+
+    function startFireworks(){
+      fireCanvas.style.visibility = 'visible';
+      if(fireIntervalId) return;
+      fireIntervalId = setInterval(()=> {
+        createFirework(random(100, fireCanvas.width-100), random(80, fireCanvas.height-120));
+      }, 900);
+      fireDrawId = setInterval(drawFireworks, 30);
+    }
+    function stopFireworks(){
+      clearInterval(fireIntervalId); fireIntervalId = null;
+      clearInterval(fireDrawId); fireDrawId = null;
+      particles = [];
+      ctx.clearRect(0,0,fireCanvas.width, fireCanvas.height);
+      fireCanvas.style.visibility = 'hidden';
+    }
+
+    function showFireworks(){
+      startFireworks();
+      // optionally auto-stop after some time (let it run)
+      // setTimeout(stopFireworks, 30_000);
+    }
+
+    // ====== Soft Melody using WebAudio ======
+    let audioCtx = null;
+    let osc = null;
+    let gain = null;
+    let playing = false;
+    playBtn.addEventListener('click', async () => {
+      if(playing){
+        stopMelody();
+        playBtn.textContent = 'Play Melody';
+      }else{
+        await startMelody();
+        playBtn.textContent = 'Pause Melody';
+      }
+    });
+
+    async function startMelody(){
+      try{
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        osc = audioCtx.createOscillator();
+        gain = audioCtx.createGain();
+        // soft waveform
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        // gentle envelope
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.03, audioCtx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+
+        // create a simple repeating arpeggio by changing frequency
+        let i=0;
+        playing = true;
+        playSequence(i);
+      }catch(e){
+        console.warn('Audio failed', e);
+      }
+    }
+
+    function playSequence(i){
+      if(!playing) return;
+      const seq = [440, 523.25, 659.25, 783.99, 659.25, 523.25]; // A4,C5,E5,G5,...
+      const now = audioCtx.currentTime;
+      const f = seq[i % seq.length];
+      osc.frequency.cancelScheduledValues(now);
+      osc.frequency.setValueAtTime(f, now);
+      // softly modulate gain for gentle pluck
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setValueAtTime(0.02, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
+      setTimeout(()=> playSequence(i+1), 900);
+    }
+
+    function stopMelody(){
+      if(!playing) return;
+      try{
+        osc.stop(); osc.disconnect(); gain.disconnect();
+      }catch(e){}
+      osc = null; gain = null; playing = false;
+    }
+
+    // ====== Utilities: detect if on mobile for share fallback ======
+    function isMobile(){
+      return /Mobi|Android/i.test(navigator.userAgent);
+    }
+
+    // ====== Window focus handling: refresh on focus to ensure correct day detection ======
+    window.addEventListener('focus', () => updateClock());
+
+    // ====== Copy on double-tap (optional small UX) ======
+    messageBox.addEventListener('dblclick', async () => {
+      const text = getVisibleMessageText();
+      try{ await navigator.clipboard.writeText(text); alert('Message copied!'); }catch(e){}
+    });
+
+    // ====== Share & Copy already wired above; final small adjustments ======
+
+    // on page load, ensure progress bar animates to correct width
+    setTimeout(updateClock, 500);
+
+    // expose open-letter button to open modal (only appears on birthday)
+    openLetterBtn.addEventListener('click', () => {
+      modal.classList.remove('hidden');
+    });
+
+    // Accessibility: close modal with Escape
+    window.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && !modal.classList.contains('hidden')) modal.classList.add('hidden');
+    });
+
+    // === End of script ===
   </script>
 </body>
 </html>
